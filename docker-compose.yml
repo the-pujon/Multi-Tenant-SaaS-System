@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -13,3 +11,53 @@ services:
       - .:/app
       - /app/node_modules
     command: npm run dev
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      # MongoDB connection string (secure, internal DNS)
+      MONGODB_URI: mongodb://app_user:${MONGO_PASSWORD}@mongo:27017/${MONGO_DB}?authSource=${MONGO_DB}
+      # Redis connection string (password protected)
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+    networks:
+      - app-net
+
+  mongo:
+    image: mongo:7.0
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017" # exposed for Mongo Compass
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    networks:
+      - app-net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379" # exposed for Redis Insight
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-net
+
+volumes:
+  mongo_data:
+  mongo_config:
+  redis_data:
+
+networks:
+  app-net:
+    driver: bridge

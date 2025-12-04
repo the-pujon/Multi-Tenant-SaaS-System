@@ -74,7 +74,7 @@ const userSchema = new Schema<IUser>(
   {
     timestamps: true,
     toJSON: {
-      transform: (doc, ret) => {
+      transform: (doc, ret: Partial<IUser & Document>) => {
         delete ret.password;
         delete ret.failedLoginAttempts;
         delete ret.lastFailedLogin;
@@ -90,19 +90,14 @@ const userSchema = new Schema<IUser>(
 userSchema.index({ role: 1 });
 userSchema.index({ isVerified: 1 });
 
-// Middleware to hash password before saving
-userSchema.pre('save', async function (next) {
+// Middleware to hash password before saving (Mongoose 6+ async/await syntax)
+userSchema.pre('save', async function () {
   // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return;
 
-  try {
-    // Generate salt and hash password
-    const salt = await bcrypt.genSalt(Number(config.bcrypt_salt_rounds));
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error as Error);
-  }
+  // Generate salt and hash password
+  const salt = await bcrypt.genSalt(Number(config.bcrypt_salt_rounds));
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Static method to find user by email

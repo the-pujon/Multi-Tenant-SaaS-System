@@ -9,6 +9,7 @@ export enum UserRole {
 }
 
 export interface IUser {
+  _id?: string;
   name: string;
   email: string;
   phone: string;
@@ -40,6 +41,7 @@ export interface IUserModel extends Model<IUser> {
 }
 
 export interface ITokenPayload {
+  userId: string;
   email: string;
   role: UserRole;
   iat?: number;

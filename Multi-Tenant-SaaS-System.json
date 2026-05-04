@@ -1,0 +1,472 @@
+{
+    "info": {
+        "name": "modular-express-mongo-starter",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Signup",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test.user@example.com\",\n  \"phone\": \"01234567890\",\n  \"password\": \"pass123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/signup",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "signup"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Verify Email",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test.user@example.com\",\n  \"code\": \"ABC123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/verify-email",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify-email"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Resend Verify Email Code",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test.user@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/resend-Verify-Email-Code",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "resend-Verify-Email-Code"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "let json = {};",
+                                    "try { json = pm.response.json(); } catch (e) {}",
+                                    "const accessTokenFromBody = json?.data?.accessToken;",
+                                    "if (accessTokenFromBody) {",
+                                    "  pm.environment.set('accessToken', accessTokenFromBody);",
+                                    "}",
+                                    "const setCookies = pm.response.headers.getAll('set-cookie') || [];",
+                                    "const allCookies = setCookies.join('; ');",
+                                    "const accessMatch = allCookies.match(/accessToken=([^;]+)/);",
+                                    "const refreshMatch = allCookies.match(/refreshToken=([^;]+)/);",
+                                    "if (accessMatch) {",
+                                    "  pm.environment.set('accessToken', accessMatch[1]);",
+                                    "}",
+                                    "if (refreshMatch) {",
+                                    "  pm.environment.set('refreshToken', refreshMatch[1]);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test.user@example.com\",\n  \"password\": \"pass123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/login",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Refresh Token",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{apiBase}}/auth/refresh-token",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "refresh-token"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Forgot Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test.user@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/forgot-password",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "forgot-password"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test.user@example.com\",\n  \"token\": \"RESET_TOKEN\",\n  \"newPassword\": \"newpass123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/reset-password/{{resetToken}}",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "reset-password",
+                                "{{resetToken}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{apiBase}}/auth/logout",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Get Users",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{apiBase}}/auth/users?page=1&limit=10",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change Role",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test.user@example.com\",\n  \"newRole\": \"seller\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/auth/change-role",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "change-role"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{apiBase}}/auth/delete-user/{{userId}}",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "delete-user",
+                                "{{userId}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Shops",
+            "item": [
+                {
+                    "name": "Create Shop",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "let json = {};",
+                                    "try { json = pm.response.json(); } catch (e) {}",
+                                    "const shopId = json?.data?._id;",
+                                    "if (shopId) {",
+                                    "  pm.environment.set('shopId', shopId);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"My First Shop\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/shops",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "shops"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get My Shops",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{apiBase}}/shops",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "shops"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Products",
+            "item": [
+                {
+                    "name": "Create Product",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "let json = {};",
+                                    "try { json = pm.response.json(); } catch (e) {}",
+                                    "const productId = json?.data?._id;",
+                                    "if (productId) {",
+                                    "  pm.environment.set('productId', productId);",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Sample Product\",\n  \"price\": 19.99\n}"
+                        },
+                        "url": {
+                            "raw": "{{apiBase}}/shops/{{shopId}}/products",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "shops",
+                                "{{shopId}}",
+                                "products"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Products For Shop",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{apiBase}}/shops/{{shopId}}/products",
+                            "host": [
+                                "{{apiBase}}"
+                            ],
+                            "path": [
+                                "shops",
+                                "{{shopId}}",
+                                "products"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "const accessToken = pm.environment.get('accessToken');",
+                    "const refreshToken = pm.environment.get('refreshToken');",
+                    "const cookies = [];",
+                    "if (accessToken) cookies.push(`accessToken=${accessToken}`);",
+                    "if (refreshToken) cookies.push(`refreshToken=${refreshToken}`);",
+                    "if (cookies.length) {",
+                    "  pm.request.headers.upsert({ key: 'Cookie', value: cookies.join('; ') });",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:4000"
+        },
+        {
+            "key": "apiBase",
+            "value": "{{baseUrl}}/api/v1"
+        },
+        {
+            "key": "shopId",
+            "value": ""
+        },
+        {
+            "key": "productId",
+            "value": ""
+        },
+        {
+            "key": "userId",
+            "value": ""
+        },
+        {
+            "key": "resetToken",
+            "value": "RESET_TOKEN"
+        }
+    ]
+}

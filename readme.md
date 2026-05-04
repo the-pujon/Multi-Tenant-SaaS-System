@@ -148,6 +148,42 @@ class AppError extends Error {
   - Email verification
   - Password reset
 
+## 🧩 Multi-Tenant SaaS Task (Tenant → Shops → Products)
+
+### Relationships
+- **Tenant (User)** owns many **Shops**
+- **Shop** owns many **Products**
+- **Product** belongs to one **Shop**
+
+Collections: `users`, `shops`, `products`.
+
+### Data Isolation Strategy
+This implementation uses a **shared MongoDB database** with strict tenant scoping:
+- Every shop row includes `tenantId` (the user id).
+- Every product row includes `tenantId` and `shopId`.
+- All shop and product queries filter by `tenantId` from the access token.
+- Product creation first verifies shop ownership by `tenantId`.
+
+This ensures Tenant A cannot access Tenant B data even with a valid ID.
+
+### API Endpoints (v1)
+- `POST /api/v1/auth/signup`
+- `POST /api/v1/auth/login`
+- `POST /api/v1/shops` (create shop)
+- `GET /api/v1/shops` (list my shops)
+- `POST /api/v1/shops/:shopId/products` (add product)
+- `GET /api/v1/shops/:shopId/products` (list products per shop)
+
+### Scaling Approach
+- Keep shared DB with tenant scoping for fast onboarding and low cost.
+- Add compound indexes on `tenantId` + `shopId` for query speed.
+- For large tenants, migrate to **tenant-specific databases** using the same schema and a routing layer.
+
+### Setup (Quick Start)
+1. Configure `.env` using the existing template in this README.
+2. Install dependencies: `npm i`
+3. Run dev server: `npm run dev`
+
 ## 🛠️ Implementation Guidelines
 
 ### 1. Creating New Modules

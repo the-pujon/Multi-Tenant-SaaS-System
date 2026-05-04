@@ -275,6 +275,7 @@ const loginUser = async (payload: ILoginUser): Promise<{ user: IUser; accessToke
     await user.resetFailedLoginAttempts();
 
     const jwtPayload: ITokenPayload = {
+      userId: String(user._id),
       email: user.email,
       role: user.role,
     };
@@ -508,7 +509,8 @@ const refreshTokenService = async (res: any, token?: any) => {
       throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
     }
 
-    const jwtPayload = {
+    const jwtPayload: ITokenPayload = {
+      userId: String(user._id),
       email: user.email,
       role: user.role as UserRole,
     };
